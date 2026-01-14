@@ -4,6 +4,7 @@ use nu_glob::MatchOptions;
 use nu_path::expand_path_with;
 use nu_protocol::{
     NuGlob,
+    Record,
     shell_error::{self, io::IoError},
 };
 use std::{ffi::OsString, path::PathBuf};
@@ -249,14 +250,19 @@ impl Command for UMv {
             let output: Vec<Value> = verbose_msgs
                 .into_iter()
                 .map(|(src, dest)| {
-                    Value::string(
-                        translate!(
-                            "mv-verbose-renamed",
-                            "from" => format!("'{}'", src.display()),
-                            "to" => format!("'{}'", dest.display())
-                        ),
-                        call.head,
-                    )
+                    let message = translate!(
+                        "mv-verbose-renamed",
+                        "from" => format!("'{}'", src.display()),
+                        "to" => format!("'{}'", dest.display())
+                    );
+                    let mut record = Record::new();
+                    record.push("source", Value::string(src.display().to_string(), call.head));
+                    record.push(
+                        "destination",
+                        Value::string(dest.display().to_string(), call.head),
+                    );
+                    record.push("message", Value::string(message, call.head));
+                    Value::record(record, call.head)
                 })
                 .collect();
             Ok(PipelineData::Value(Value::list(output, call.head), None))

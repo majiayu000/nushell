@@ -726,11 +726,10 @@ fn mv_verbose_shows_renamed_message() {
 
         let actual = nu!(
             cwd: dirs.test(),
-            "mv -v test.txt renamed.txt | to text"
+            "let out = (mv -v test.txt renamed.txt); $\"($out | get 0 | get source) -> ($out | get 0 | get destination)\""
         );
 
-        // Verify the verbose output contains the expected format
-        assert!(actual.out.contains("renamed"));
+        // Verify the verbose output contains the expected fields
         assert!(actual.out.contains("test.txt"));
         assert!(actual.out.contains("renamed.txt"));
         assert!(actual.err.is_empty());
@@ -748,11 +747,10 @@ fn mv_verbose_to_directory_shows_correct_destination() {
 
         let actual = nu!(
             cwd: dirs.test(),
-            "mv -v file.txt target/ | to text"
+            "let out = (mv -v file.txt target/); $\"($out | get 0 | get source) -> ($out | get 0 | get destination)\""
         );
 
         // Verify the verbose output shows the correct destination path
-        assert!(actual.out.contains("renamed"));
         assert!(actual.out.contains("file.txt"));
         assert!(actual.out.contains("target"));
         assert!(actual.err.is_empty());

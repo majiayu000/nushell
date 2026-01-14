@@ -99,14 +99,7 @@ impl Command for UMkdir {
                 });
             }
             if is_verbose {
-                verbose_out.push(Value::string(
-                    translate!(
-                        "mkdir-verbose-created-directory",
-                        "util_name" => "mkdir",
-                        "path" => format!("'{}'", dir.display())
-                    ),
-                    call.head,
-                ));
+                verbose_out.push(Value::string(dir.display().to_string(), call.head));
             }
         }
 
